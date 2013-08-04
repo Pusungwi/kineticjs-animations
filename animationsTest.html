@@ -1,0 +1,147 @@
+<html>
+<head>
+    <title>BrowserLED Alpha</title>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.5.4.min.js"></script>
+    <script src="kineticjs-animations.js"></script>
+    <style type="css">
+      #wrapper {
+        border: 5px solid #000000;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+    </style>
+    <script language="javascript">
+      var stageWidth = window.innerWidth; //document.documentElement.clientWidth;
+      var stageHeight = window.innerHeight + $('#inputbox').height(); //document.documentElement.clientHeight;
+
+      function showDiv(divID) {
+        document.getElementById(divID).style.visibility = 'visible';
+      }
+      function hideDiv(divID) {
+        document.getElementById(divID).style.visibility = 'hidden';
+      }
+
+      var changeFullScreenHandler = function(){                                           
+        //NB the following line requrires the libary from John Dyer                                                       
+        if (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen) {                                                              
+          //alert("In fullscreen, I should do something here");
+          showDiv('container');
+          $('#container').width(stageWidth);
+          $('#container').height(stageHeight);                  
+        }                                                                      
+        else {                                                                 
+          //alert("NOT In fullscreen, I should do something here");
+          hideDiv('container');
+          $('#container').width(0);
+          $('#container').height(0);          
+        }                                                                      
+      }
+
+      function requestFullScreen(element) {
+        // Supports most browsers and their versions.
+        var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+        if (requestMethod) { // Native full screen.
+          requestMethod.call(element);
+        } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+          var wscript = new ActiveXObject("WScript.Shell");
+          if (wscript !== null) {
+            wscript.SendKeys("{F11}");
+          }
+        }
+      }
+
+      function runFullScreen() {
+        var elem = document.body; // Make the body go full screen.
+        requestFullScreen(elem);
+      }
+      
+      function createContainerContents() {
+        var stageWidth = window.innerWidth; //document.documentElement.clientWidth;
+        var stageHeight = window.innerHeight + $('#inputbox').height(); //document.documentElement.clientHeight;
+
+        var isUseFadeAnimation = document.getElementsByName("fade_enabled")[0].checked;
+        
+        var stage = new Kinetic.Stage({
+          container: 'container',
+          width: stageWidth,
+          height: stageHeight
+        });
+
+        var layer = new Kinetic.Layer();
+        var bgRect = new Kinetic.Rect({
+          x: 0,
+          y: 0,
+          width: stageWidth,
+          height: stageHeight,
+          fill: 'black'
+        });
+        var simpleText = new Kinetic.Text({
+          x: 0,
+          y: 0,
+          text: document.getElementsByName("q")[0].value,
+          fontSize: 400,
+          fontFamily: 'Calibri',
+          fill: 'red'
+        });
+
+        // add and run animation
+        if (isUseFadeAnimation == true) {
+          var fadePeriod = document.getElementsByName("fade_ms")[0].value;
+
+          fadeOutAnimation(layer, simpleText, fadePeriod, function() {
+            fadeInAnimation(layer, simpleText, fadePeriod, null);
+          });
+        }
+
+        // to align text in the middle of the screen, we can set the
+        // shape offset to the center of the text shape after instantiating it
+        //simpleText.setOffset({
+        //  x: simpleText.getWidth() / 2
+        //});
+
+        // add the shapes to the layer
+        layer.add(bgRect);
+        layer.add(simpleText);
+        stage.add(layer);
+
+        stage.draw();
+      }
+
+      function runLEDScreen() {
+        document.addEventListener("fullscreenchange", changeFullScreenHandler, false);      
+        document.addEventListener("webkitfullscreenchange", changeFullScreenHandler, false);
+        document.addEventListener("mozfullscreenchange", changeFullScreenHandler, false);     
+
+        runFullScreen();
+
+        createContainerContents();
+      }                                          
+    </script>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="inputbox" style="text-align: center;">
+      text : <input type="text" name="q" value="Simple Text"><p>
+      <form action="">Animation : 
+        <input type="radio" name="animation" value="on" checked="checked">On
+        <input type="radio" name="animation" value="off">Off
+      </form>
+      fade : <input type="checkbox" name="fade_enabled"> time : <input type="text" name="fade_ms" value="1000"> ms
+      </p>
+      <p>
+      move : <input type="checkbox" name="fade_enabled"> time : <input type="text" name="fade_ms" value="1000"> ms
+      </p>
+      <h1 style="text-align: center;">
+        Open In Full Screen
+      </h1><br>
+      <a href="javascript:void(0);" onclick="runLEDScreen();">
+        Open Full Screen Window
+      </a>
+    </div>
+</body>
+</html>
