@@ -111,42 +111,96 @@ function zoomToAnimation(targetLayer, targetShape, dstScale, period, endFunc) {
 }
 
 // rotate
-function rotateToFunction(targetLayer, targetShape, dstDegree, period, endFunc) {
-  // one revolution per 4 seconds
-  var angularSpeed = 1000;
+function rotateToAnimation(targetLayer, targetShape, dstRotate, period, endFunc) {
+  var prevShapeDeg = targetShape.getRotationDeg();
   var anim = new Kinetic.Animation(function(frame) {
-    var angularSpeed = Math.PI / 2;
-    var angleDiff = frame.timeDiff * angularSpeed / 1000;
-    targetShape.rotate(angleDiff);
+    var currentShapeDeg = targetShape.getRotationDeg();
+    var angleDiff = ((frame.time / period) * dstRotate) - currentShapeDeg;
+    var isAlreadyReached = false;
+
+    if (currentShapeDeg >= dstRotate) {
+      angleDiff = dstRotate - currentShapeDeg;
+      isAlreadyReached = true;
+    }
+    targetShape.rotateDeg(angleDiff);
+
+    if (isAlreadyReached == true) {
+      this.stop();
+    }
   }, layer);
 
   anim.start();
 }
 
 // move
-function moveToFunction(targetLayer, targetShape, targetX, targetY, period, endFunc) {
+function moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc) {
   var shapeX = targetShape.getX();
+
+  var anim = new Kinetic.Animation(function(frame) {
+    var frameX = (targetX-shapeX) * (frame.time / period);
+    var newX = shapeX + frameX;
+    var isAlreadyReached = false;
+
+    if (frameX >= 0) {
+      if (newX >= targetX) {
+        newX = targetX;
+        isAlreadyReached = true;
+
+      }
+    } else {
+      if (newX <= targetX) {
+        newX = targetX;
+        isAlreadyReached = true;
+      }
+    }
+    targetShape.setX(newX);
+
+    if (isAlreadyReached == true) {
+      this.stop();
+      if (endFunc !== null) {
+        endFunc();
+      }
+    }
+  }, targetLayer);
+
+  anim.start();
+}
+
+function moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc) {
   var shapeY = targetShape.getY();
 
   var anim = new Kinetic.Animation(function(frame) {
-    var newX = (targetX-shapeX) * (frame.time / period) + shapeX;
-    var newY = (targetY-shapeY) * (frame.time / period) + shapeY;
+    var frameY = (targetY-shapeY) * (frame.time / period);
+    var newY = shapeY + frameY;
+    var isAlreadyReached = false;
 
-    
-    if (newX >= targetX) {
-      newX = targetX;
-    }
-    targetShape.setX(newX);
-    
-    if (newY >= targetY) {
-      newY = targetY;
+    console.log("new", frameY, newY);
+
+    if (frameY >= 0) {
+      if (newY >= targetY) {
+        newY = targetY;
+        isAlreadyReached = true;
+      }
+    } else {
+      if (newY <= targetY) {
+        newY = targetY;
+        isAlreadyReached = true;
+      }
     }
     targetShape.setY(newY);
 
-    if (newX >= targetX && newY >= targetY) {
+    if (isAlreadyReached == true) {
       this.stop();
+      if (endFunc !== null) {
+        endFunc();
+      }
     }
-  }, layer);
+  }, targetLayer);
 
   anim.start();
+}
+
+function moveToAnimation(targetLayer, targetShape, targetX, targetY, period, endFunc) {
+  moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc);
+  moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc);
 }
