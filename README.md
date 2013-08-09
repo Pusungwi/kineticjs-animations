@@ -9,6 +9,7 @@ available animations [name (function name)]
 
 - Move (moveToAnimation)
 - Fade In/Out/To (fadeInAnimation, fadeOutAnimation, fadeToAnimation)
+- Blink (blinkAnimation)
 - Zoom In/Out (zoomInAnimation, zoomOutAnimation)
 - Rotate (rotateToAnimation)
 

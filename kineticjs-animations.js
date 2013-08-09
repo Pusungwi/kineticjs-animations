@@ -49,6 +49,28 @@ function fadeOutAnimation(targetLayer, targetShape, period, endFunc) {
   fadeToAnimation(targetLayer, targetShape, period, 0.0, endFunc);
 }
 
+//blink (required fade)
+function blinkAnimation(targetLayer, targetShape, period, endFunc) {
+  var opacityValue = 0.0;
+  var anim = new Kinetic.Animation(function(frame) {
+    if (frame.time < period) {
+      targetShape.setOpacity(opacityValue);
+      if (opacityValue == 0.0) {
+        opacityValue = 1.0;
+      } else {
+        opacityValue = 0.0;
+      }
+    } else {
+      targetShape.setOpacity(1.0);
+      this.stop();
+      if (endFunc !== null) {
+        endFunc();
+      }
+    }
+  }, targetLayer);
+  anim.start();
+}
+
 //zoom in/out/to animations
 function insertCenterScale(targetShape) {
   if (targetShape.cx == null) {
