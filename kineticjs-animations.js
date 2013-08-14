@@ -50,15 +50,20 @@ function fadeOutAnimation(targetLayer, targetShape, period, endFunc) {
 }
 
 //blink (required fade)
-function blinkAnimation(targetLayer, targetShape, period, endFunc) {
+function blinkAnimation(targetLayer, targetShape, period, cyclePeriod, endFunc) {
   var opacityValue = 0.0;
+  var cycleCount = 1;
   var anim = new Kinetic.Animation(function(frame) {
+    var realCyclePeriod = cycleCount * cyclePeriod;
     if (frame.time < period) {
-      targetShape.setOpacity(opacityValue);
-      if (opacityValue == 0.0) {
-        opacityValue = 1.0;
-      } else {
-        opacityValue = 0.0;
+      if (frame.time >= realCyclePeriod) {
+        cycleCount++;
+        targetShape.setOpacity(opacityValue);
+        if (opacityValue == 0.0) {
+          opacityValue = 1.0;
+        } else {
+          opacityValue = 0.0;
+        }
       }
     } else {
       targetShape.setOpacity(1.0);
@@ -132,26 +137,39 @@ function zoomToAnimation(targetLayer, targetShape, dstScale, period, endFunc) {
   }
 }
 
-// rotate
-function rotateToAnimation(targetLayer, targetShape, dstRotate, period, endFunc) {
-  var prevShapeDeg = targetShape.getRotationDeg();
+function rotateByAnimation(targetLayer, targetShape, dstRotate, period, endFunc) {
+  var animBeforeDeg = targetShape.getRotationDeg(); 
+  var isAlreadyReached = false;
+
   var anim = new Kinetic.Animation(function(frame) {
+    var movedDeg = (dstRotate / period) * frame.time;
+    targetShape.rotateDeg(movedDeg);
+
     var currentShapeDeg = targetShape.getRotationDeg();
-    var angleDiff = ((frame.time / period) * dstRotate) - currentShapeDeg;
-    var isAlreadyReached = false;
-
-    if (currentShapeDeg >= dstRotate) {
-      angleDiff = dstRotate - currentShapeDeg;
-      isAlreadyReached = true;
+    if (dstRotate > 0) {
+      if (currentShapeDeg >= animBeforeDeg+dstRotate) {
+        isAlreadyReached = true;
+      }
+    } else {
+      if (currentShapeDeg <= animBeforeDeg+dstRotate) {
+        isAlreadyReached = true;
+      }
     }
-    targetShape.rotateDeg(angleDiff);
-
     if (isAlreadyReached == true) {
+      targetShape.rotateDeg((animBeforeDeg+dstRotate)-currentShapeDeg);
       this.stop();
+      if (endFunc !== null) {
+        endFunc();
+      }
     }
   }, layer);
 
   anim.start();
+}
+
+function rotateToAnimation(targetLayer, targetShape, dstRotate, period, endFunc) {
+  var currentShapeDeg = targetShape.getRotationDeg();
+  rotateByAnimation(targetLayer, targetShape, dstRotate-currentShapeDeg, period, endFunc);
 }
 
 // move
@@ -225,4 +243,9 @@ function moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc) {
 function moveToAnimation(targetLayer, targetShape, targetX, targetY, period, endFunc) {
   moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc);
   moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc);
+}
+
+function moveByAnimation(targetLayer, targetShape, targetX, targetY, period, endFunc) {
+  moveByXAnimation(targetLayer, targetShape, targetX, period, endFunc);
+  moveByYAnimation(targetLayer, targetShape, targetY, period, endFunc);
 }

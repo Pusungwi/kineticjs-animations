@@ -11,7 +11,7 @@ available animations [name (function name)]
 - Fade In/Out/To (fadeInAnimation, fadeOutAnimation, fadeToAnimation)
 - Blink (blinkAnimation)
 - Zoom In/Out (zoomInAnimation, zoomOutAnimation)
-- Rotate (rotateToAnimation)
+- Rotate To/By (rotateToAnimation, rotateByAnimation)
 
 TODO
 ----
