@@ -168,32 +168,31 @@ function rotateByAnimation(targetLayer, targetShape, dstRotate, period, endFunc)
 }
 
 function rotateToAnimation(targetLayer, targetShape, dstRotate, period, endFunc) {
-  var currentShapeDeg = targetShape.getRotationDeg();
+  var currentShapeDeg = targetShape.getRotationDeg(); 
   rotateByAnimation(targetLayer, targetShape, dstRotate-currentShapeDeg, period, endFunc);
 }
 
 // move
-function moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc) {
+function moveByXAnimation(targetLayer, targetShape, targetX, period, endFunc) {
   var shapeX = targetShape.getX();
-
   var anim = new Kinetic.Animation(function(frame) {
-    var frameX = (targetX-shapeX) * (frame.time / period);
-    var newX = shapeX + frameX;
+    var movingX = shapeX + targetX * (frame.time / period);
+    var arrivalX = shapeX+targetX;
     var isAlreadyReached = false;
 
-    if (frameX >= 0) {
-      if (newX >= targetX) {
-        newX = targetX;
+    if (targetX >= 0) {
+      if (movingX >= arrivalX) {
+        newX = arrivalX;
         isAlreadyReached = true;
 
       }
     } else {
-      if (newX <= targetX) {
-        newX = targetX;
+      if (movingX <= arrivalX) {
+        movingX = arrivalX;
         isAlreadyReached = true;
       }
     }
-    targetShape.setX(newX);
+    targetShape.setX(movingX);
 
     if (isAlreadyReached == true) {
       this.stop();
@@ -206,28 +205,25 @@ function moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc) {
   anim.start();
 }
 
-function moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc) {
+function moveByYAnimation(targetLayer, targetShape, targetY, period, endFunc) {
   var shapeY = targetShape.getY();
-
   var anim = new Kinetic.Animation(function(frame) {
-    var frameY = (targetY-shapeY) * (frame.time / period);
-    var newY = shapeY + frameY;
+    var movingY = shapeY + targetY * (frame.time / period);
+    var arrivalY = shapeY + targetY;
     var isAlreadyReached = false;
 
-    console.log("new", frameY, newY);
-
-    if (frameY >= 0) {
-      if (newY >= targetY) {
-        newY = targetY;
+    if (targetY >= 0) {
+      if (movingY >= arrivalY) {
+        movingY = arrivalY;
         isAlreadyReached = true;
       }
     } else {
-      if (newY <= targetY) {
-        newY = targetY;
+      if (movingY <= arrivalY) {
+        movingY = arrivalY;
         isAlreadyReached = true;
       }
     }
-    targetShape.setY(newY);
+    targetShape.setY(movingY);
 
     if (isAlreadyReached == true) {
       this.stop();
@@ -241,8 +237,11 @@ function moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc) {
 }
 
 function moveToAnimation(targetLayer, targetShape, targetX, targetY, period, endFunc) {
-  moveToXAnimation(targetLayer, targetShape, targetX, period, endFunc);
-  moveToYAnimation(targetLayer, targetShape, targetY, period, endFunc);
+  var currentShapeX = targetShape.getX();
+  var currentShapeY = targetShape.getY();
+
+  moveByXAnimation(targetLayer, targetShape, targetX-currentShapeX, period, endFunc);
+  moveByYAnimation(targetLayer, targetShape, targetX-currentShapeY, period, endFunc);
 }
 
 function moveByAnimation(targetLayer, targetShape, targetX, targetY, period, endFunc) {

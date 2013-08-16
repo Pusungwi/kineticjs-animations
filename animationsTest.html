@@ -65,8 +65,12 @@
         rotateByAnimation(layer, contentsBGRect, 90, defPeriod, null);
       }
 
-      function runMoveAnimation() {
-        moveToAnimation(layer, contentsBGRect, defPeriod, stageWidth/8, stageHeight/8, null);
+      function runMoveToAnimation() {
+        moveToAnimation(layer, contentsBGRect, 50, 100, 1000, null);
+      }
+
+      function runMoveByAnimation() {
+        moveByAnimation(layer, contentsBGRect, 50, 100, 1000, null);
       }
 
       function runFadeToAnimation() {
@@ -79,7 +83,7 @@
         blinkAnimation(layer, contentsBGRect, defPeriod, 200, null);
       }
     </script>
-    <a href="javascript:runMoveAnimation();">[RUN MOVE]</a>  <a href="javascript:runFadeToAnimation();">[RUN FADE]</a>  <a href="javascript:runRotateToAnimation();">[RUN ROTATE TO]</a> <a href="javascript:runRotateByAnimation();">[RUN ROTATE BY]</a><p><a href="javascript:runZoomAnimation();">[RUN ZOOM]</a>  <a href="javascript:runBlinkAnimation();">[RUN BLINK]</a>
+    <a href="javascript:runMoveByAnimation();">[RUN MOVE BY]</a> <a href="javascript:runMoveToAnimation();">[RUN MOVE TO]</a>  <a href="javascript:runFadeToAnimation();">[RUN FADE]</a>  <a href="javascript:runRotateToAnimation();">[RUN ROTATE TO]</a> <a href="javascript:runRotateByAnimation();">[RUN ROTATE BY]</a><p><a href="javascript:runZoomAnimation();">[RUN ZOOM]</a>  <a href="javascript:runBlinkAnimation();">[RUN BLINK]</a>
     <a href="javascript:reset();">[RESET]</a></p>
   </body>
 </html>
